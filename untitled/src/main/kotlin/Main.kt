@@ -1,62 +1,52 @@
 import java.util.*
-import kotlin.math.max
 
-// https://www.acmicpc.net/problem/17829
+// https://www.acmicpc.net/problem/1920
 
 fun main(): Unit = with(Scanner(System.`in`)) {
     val n = nextLine().toInt()
-    val matrix = Array(n) { IntArray(n) { 0 } }
+    val an = stringToIntArray(nextLine(), n)
+    val m = nextLine().toInt()
+    val bn = stringToIntArray(nextLine(), m)
 
-    for (i in 0 until n) {
-        val row = nextLine().trim().split(' ').map { it.toInt(); }
+    an.sort()
 
-        for (j in 0 .. row.lastIndex) {
-            matrix[i][j] = row[j]
+//    var result = ""
+
+    for (i in 0 until m) {
+        if (containsWithBinary(an, bn[i], 0, n - 1)) {
+//            result += "1\n"
+            println("1")
+        } else {
+//            result += "0\n"
+            println("0")
         }
     }
 
-    print(solve(matrix).toString())
+//    print(result)
 }
 
-fun solve(matrix: Array<IntArray>): Int {
-    if (matrix.size == 2) {
-        val numbers = IntArray(4)
+fun stringToIntArray(string:String, size: Int): IntArray {
+    val raw = string.trim().split(' ').map { it.toInt(); }
+    val result = IntArray(size)
 
-        numbers[0] = matrix[0][0]
-        numbers[1] = matrix[0][1]
-        numbers[2] = matrix[1][0]
-        numbers[3] = matrix[1][1]
-
-        return getSecondLargestInt(numbers)
+    for (i in 0 until size) {
+        result[i] = raw[i]
     }
 
-    val halfSize = matrix.size / 2
-    val halfMatrix = Array(halfSize) { IntArray(halfSize) { 0 } }
+    return result
+}
 
-    val candidateValues = IntArray(4)
+fun containsWithBinary(intArray: IntArray, target: Int, start: Int, end: Int): Boolean {
+    if (start > end) return false
 
-    var index = 0;
+    val mid = (start + end) / 2
 
-    for (dx in 0 .. 1) {
-        for (dy in 0 .. 1) {
-            for (i in (halfSize * dx) until (halfSize * (dx + 1))) {
-                for (j in (halfSize * dy) until (halfSize * (dy + 1))) {
-                    halfMatrix[i - halfSize * dx][j - halfSize * dy] = matrix[i][j]
-                }
-            }
-
-            candidateValues[index] = solve(halfMatrix)
-            index++
-        }
+    if (intArray[mid] == target) {
+        return true
+    } else if (intArray[mid] > target) {
+        return containsWithBinary(intArray,target, start, mid - 1);
+    } else {
+        return containsWithBinary(intArray,target, mid + 1, end);
     }
-
-    return getSecondLargestInt(candidateValues)
 }
 
-fun getSecondLargestInt(_numbers: IntArray): Int{
-    val numbers = _numbers.clone();
-    numbers.distinct()
-    numbers.sort()
-    return numbers[2]
-
-}
