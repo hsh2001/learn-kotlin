@@ -1,52 +1,33 @@
 import java.util.*
 
-// https://www.acmicpc.net/problem/1920
+// https://www.acmicpc.net/problem/1802
 
 fun main(): Unit = with(Scanner(System.`in`)) {
-    val n = nextLine().toInt()
-    val an = stringToIntArray(nextLine(), n)
-    val m = nextLine().toInt()
-    val bn = stringToIntArray(nextLine(), m)
+    val t = nextLine().toInt()
+    val results = BooleanArray(t)
 
-    an.sort()
+    for (i in 0 until t) {
+        val line = nextLine()
+        val inOuts = BooleanArray(line.length).toMutableList()
 
-//    var result = ""
-
-    for (i in 0 until m) {
-        if (containsWithBinary(an, bn[i], 0, n - 1)) {
-//            result += "1\n"
-            println("1")
-        } else {
-//            result += "0\n"
-            println("0")
+        for (x in line.indices) {
+            inOuts[x] = line[x] == '1'
         }
+
+        results[i] = isReFoldable(inOuts)
     }
 
-//    print(result)
+    print(results.joinToString("\n") { if (it) "YES" else "NO" })
 }
 
-fun stringToIntArray(string:String, size: Int): IntArray {
-    val raw = string.trim().split(' ').map { it.toInt(); }
-    val result = IntArray(size)
+fun isReFoldable(inOuts: List<Boolean>): Boolean {
+    if (inOuts.size == 1) return true
 
-    for (i in 0 until size) {
-        result[i] = raw[i]
+    val mid = inOuts.size / 2
+
+    for (i in 0 until mid) {
+        if (inOuts[i] == inOuts[inOuts.lastIndex - i]) return false
     }
 
-    return result
+    return isReFoldable(inOuts.slice(0 until mid)) && isReFoldable(inOuts.slice(mid + 1 until inOuts.size))
 }
-
-fun containsWithBinary(intArray: IntArray, target: Int, start: Int, end: Int): Boolean {
-    if (start > end) return false
-
-    val mid = (start + end) / 2
-
-    if (intArray[mid] == target) {
-        return true
-    } else if (intArray[mid] > target) {
-        return containsWithBinary(intArray,target, start, mid - 1);
-    } else {
-        return containsWithBinary(intArray,target, mid + 1, end);
-    }
-}
-
